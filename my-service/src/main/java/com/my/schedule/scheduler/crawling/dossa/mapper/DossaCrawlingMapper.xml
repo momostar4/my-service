@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.my.schedule.scheduler.crawling.dossa.mapper.DossaCrawlingMapper">
+<select id="getBoardInfo" resultType="caseMap">
+	SELECT *
+	FROM INNO4_CRAWLING_BOARD
+	WHERE BOARD_SEQ = #{boardNo}
+	AND G_ID		= #{gId}
+	AND T_ID		= #{tId}
+	<if test="title != null">
+		AND TITLE != #{title}
+	</if>
+</select>
+
+<insert id="insertBoardInfo">
+	INSERT INTO INNO4_CRAWLING_BOARD(
+		BOARD_SEQ
+		, TITLE
+		, USER_NAME
+		, URL
+		, G_ID
+		, T_ID
+	)
+	VALUES(
+		#{boardNo}
+		, #{title}
+		, #{userName}
+		, #{url}
+		, #{gId}
+		, #{tId}
+	)
+</insert>
+
+<select id="selectMassageList" resultType="caseMap">
+	SELECT BOARD_SEQ
+		, TITLE
+		, USER_NAME
+		, URL
+		, UPDATE_YN
+	FROM INNO4_CRAWLING_BOARD
+	WHERE G_ID = 'Menu02' AND T_ID = 'Menu55Top2' AND PUSH_YN = 'N'
+	ORDER BY INSERT_DATE
+</select>
+
+<update id="updateStatment">
+	UPDATE INNO4_CRAWLING_BOARD SET
+	PUSH_YN = 'Y'
+	WHERE BOARD_SEQ = #{board_seq}
+</update>
+
+<update id="updateBoardInfo">
+	UPDATE INNO4_CRAWLING_BOARD SET
+		TITLE = #{title}
+		, PUSH_YN = 'N'
+		, UPDATE_YN = 'Y'
+		, UPDATE_DATE = SYSDATE
+	WHERE BOARD_SEQ = #{boardNo}
+</update>
+</mapper>

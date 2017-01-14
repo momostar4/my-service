@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+			
+	<!-- component-scan -->
+	<context:component-scan base-package="com.my.schedule" />
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="order" value="1" />
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- ContentNegotiatingViewResolver -->
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="contentNegotiationManager">
+			<bean class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+				<property name="mediaTypes">
+					<map>
+						<entry key="json"	value="application/json"/>
+						<entry key="xml"	value="application/xml"/>
+						<entry key="xls"	value="application/vnd.ms-excel"/>
+						<entry key="zip"	value="application/download" />
+					</map>
+				</property>
+				<property name="ignoreAcceptHeader" value="true"/>
+			</bean>
+		</property>				
+		<property name="defaultViews">
+			<list>
+				<ref bean="jsonView"/>
+				<ref bean="xmlView"/>
+				<ref bean="excelView"/>
+				<ref bean="excelCompressView"/>
+			</list>
+		</property>
+		<property name="order" value="0"/>		
+	</bean>
+	
+	<!-- jsonView -->
+	<bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+		<property name="contentType" value="application/json; charset=UTF-8" />
+	</bean>
+	<!-- xmlView -->
+	<bean id="xmlView" class="inno4.core.view.XmlView">
+		<property name="contentType" value="application/xml; charset=UTF-8" />
+	</bean>
+	<!-- excelView -->
+	<bean id="excelView" class="inno4.core.view.ExcelView">
+		<property name="contentType" value="application/vnd.ms-excel; charset=UTF-8" />
+		<property name="classPath"	 value="com/template/inf/excel/template" />
+	</bean>
+	<!-- excelCompressView -->
+	<bean id="excelCompressView" class="inno4.core.view.ExcelCompressView">
+		<property name="contentType" value="application/download; charset=UTF-8" />
+		<property name="classPath"	 value="com/template/inf/excel/template" />
+		<property name="savePath"	 value="resources/excel" />
+	</bean>	
+	
+	<!-- CommonsMultipartResolver -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8"/>
+		<property name="maxUploadSize" value="40960000"/>
+	</bean>
+	
+	<!-- DB Transaction Manager Configure -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" propagation="REQUIRED" rollback-for="Exception"/>
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"/>
+			<tx:method name="delete*" propagation="REQUIRED" rollback-for="Exception"/>
+			<tx:method name="batch*"  propagation="REQUIRED" rollback-for="Exception"/>
+			<tx:method name="select*" read-only="true"/>
+			<tx:method name="get*"    read-only="true"/>
+		</tx:attributes>
+	</tx:advice>	
+	<aop:config proxy-target-class="true">
+		<aop:advisor pointcut="execution(* *..*Service.*(..))" advice-ref="txAdvice"/>
+	</aop:config>
+</beans>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+
+	<!-- SpEL -->
+	<util:properties id="prop"				location="classpath:configure/properties/local/common.properties"/>
+	<util:properties id="dbProp"			location="classpath:configure/properties/local/db.oracle.properties"/>
+	<util:properties id="shortnerProp"		location="classpath:configure/properties/local/shortner.properties"/>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="url" 				value="#{dbProp['jdbc.db.innostick.url']}" />
+		<property name="username" 			value="#{dbProp['jdbc.db.innostick.username']}" />
+		<property name="password" 			value="#{dbProp['jdbc.db.innostick.password']}" />
+		<property name="driverClassName"	value="#{dbProp['jdbc.db.innostick.driverClassName']}" />
+	</bean>
+	
+	<!-- Mybatis -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation"	value="classpath:configure/sqlsession/sqlsession-config.xml" />
+	</bean>
+	<!--
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory" />
+	</bean>
+	-->
+	<!-- Myatis Autowire Configuration -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.my.schedule.**.mapper" />
+	</bean>
+
+	
+	<!-- Transaction manager for a single JDBC DataSource -->
+	<bean id="transactionManager"		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource"		ref="dataSource"/>
+	</bean>	
+</beans>

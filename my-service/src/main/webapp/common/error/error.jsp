@@ -1,0 +1,49 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+	response.setStatus(HttpServletResponse.SC_OK);
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
+<title>Error Page</title>
+<link rel="stylesheet" media="screen" type="text/css" href="/resources/css/style.css" />
+</head>
+<body>
+
+<!-- 전체 레이아웃 -->
+<div id="container">
+
+	<header class="header">
+		<h1><span>Error Page</span></h1>
+	</header>
+
+	<!-- 컨텐츠 -->
+	<div class="content">
+		
+		<!-- 에러페이지 -->
+		<div class="errorWrap">
+			
+			<div class="errorPay">
+				<dl class="errorTxt">
+					<dt>에러 메세지</dt>
+					<dd>비정상적인 접근으로 인해 오류가 발생했습니다.</dd>
+				</dl>
+			</div>
+
+		</div>
+		<!--// 에러페이지 -->
+
+	</div>
+	<!--// 컨텐츠 -->
+
+	<!-- footer -->
+	<footer class="footer type02">
+	</footer>
+
+</div>
+<!--// 전체 레이아웃 -->
+
+</body>
+</html>

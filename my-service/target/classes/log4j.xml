@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- Console Appender -->
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{HH:mm:ss}] %-5p: %C - %m%n" />
+		</layout>
+	</appender>
+	
+	<!-- Daily Rolling File Appender -->
+	<appender name="dailyRollingFile" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="/app/tomcat/logs/emp/emp-schedule.log" />
+		<param name="Append" value="true" />
+		<param name="encoding" value="UTF-8" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+   		<layout class="org.apache.log4j.PatternLayout">
+    		<param name="ConversionPattern" value="[%d{HH:mm:ss}] %-5p: %C - %m%n" />
+   		</layout>
+	</appender>
+
+	<!-- Daily Rolling Error File Appender -->
+	<appender name="dailyRollingErrorFile" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="ERROR" />
+		<param name="File" value="/app/tomcat/logs/emp/emp-error.log" />
+		<param name="Append" value="true" />
+		<param name="encoding" value="UTF-8" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+   		<layout class="org.apache.log4j.PatternLayout">
+    		<param name="ConversionPattern" value="[%d{HH:mm:ss}] %-5p: %C - %m%n" />
+   		</layout>
+	</appender>
+
+	<!-- Daily Rolling SQL File Appender -->
+	<appender name="dailyRollingSqlFile" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="/app/tomcat/logs/emp/sql/emp-sql.log" />
+		<param name="Append" value="true" />
+		<!-- param name="encoding" value="UTF-8" / -->
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+   		<layout class="org.apache.log4j.PatternLayout">
+    		<param name="ConversionPattern" value="[%d{HH:mm:ss}] %-5p: - %m%n" />
+   		</layout>
+	</appender>
+
+
+	<!-- Application Loggers *************************************************************** -->
+	<logger name="com.my">
+		<level value="debug" />
+	</logger>
+	<logger name="inno4">
+		<level value="debug" />
+	</logger>
+
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.springframework.beans">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.springframework.context">
+		<level value="info" />
+	</logger>
+
+	<logger name="org.springframework.web">
+		<level value="info" />
+	</logger>
+	
+	<!-- DB Query Loggers -->
+	<logger name="java.sql">
+		<level value="debug" />
+		<appender-ref ref="dailyRollingSqlFile" />
+	</logger>
+	
+	<!-- Root Logger -->
+	<root>
+		<priority value="info" />
+		<appender-ref ref="console" />
+		<appender-ref ref="dailyRollingFile" />
+		<appender-ref ref="dailyRollingErrorFile" />
+		<appender-ref ref="dailyRollingSqlFile" />
+	</root>
+	
+</log4j:configuration>

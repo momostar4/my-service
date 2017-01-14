@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+
+	<!-- component-scan -->
+	<context:component-scan base-package="com.my.schedule" />
+
+	<!-- Scheduler Annotation -->
+	<task:annotation-driven scheduler="scheduler"/>
+	<task:scheduler pool-size="10" id="scheduler"/>
+	
+	<!-- Scheduler task:scheduled -->
+	<!--
+		cron => "seconds minutes hours day month week (year)" year is drop allow
+	-->
+	<task:scheduled-tasks>
+		<!-- Template Area -->
+		<!-- 2:20 start 3 hour increase -->
+		<!--
+		<task:scheduled ref="updateUserAccessScheduler"		method="updateUserAccess"		cron="0 20 2/1 * * *" fixed-delay="6000000"/> 	 	
+		-->
+		<!--
+		seconds			0~59
+		minutes			0~59
+		hours			0~23
+		day of month	1~31
+		month			1~12
+		day of week	1~7(1-일,7-토/MON,SUN...)
+		years (optional)	1970~2099
+		-->
+		<task:scheduled ref="testController"					method="testSend"				fixed-delay="6000000"/>
+		<!-- 
+		<task:scheduled ref="crawlingScheduler"					method="dossaCrowlingList"				fixed-delay="6000000"/>
+		<task:scheduled ref="crawlingScheduler"					method="telegramSend"					fixed-delay="6000000"/> -->
+		
+		<!-- <task:scheduled ref="dossaCrawlingScheduler"	method="dossaCrawlingList"		cron="0 2/5 6-23 * * *"/>
+		<task:scheduled ref="telegramSendScheduler"		method="dossaTelegramSend"		cron="0 0/5 6-23 * * *"/> -->
+
+	</task:scheduled-tasks>
+	
+	<!-- SpEL -->
+	<util:properties id="prop"			location="classpath:configure/properties/${server.mode}/common.properties"/>
+	<util:properties id="dbProp"		location="classpath:configure/properties/${server.mode}/db.oracle.properties"/>
+	<util:properties id="shortnerProp"	location="classpath:configure/properties/${server.mode}/shortner.properties"/>
+	<util:properties id="telegramProp"	location="classpath:configure/properties/${server.mode}/telegram.properties"/>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="url" 				value="#{dbProp['jdbc.db.innostick.url']}" />
+		<property name="username" 			value="#{dbProp['jdbc.db.innostick.username']}" />
+		<property name="password" 			value="#{dbProp['jdbc.db.innostick.password']}" />
+		<property name="driverClassName"	value="#{dbProp['jdbc.db.innostick.driverClassName']}" />
+	</bean>
+	
+	<!-- Mybatis -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation"	value="classpath:configure/sqlsession/sqlsession-config.xml" />
+	</bean>
+	<!--
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory" />
+	</bean>
+	-->
+	<!-- Myatis Autowire Configuration -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.my.schedule.**.mapper" />
+	</bean>
+
+	
+	<!-- Transaction manager for a single JDBC DataSource -->
+	<bean id="transactionManager"		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource"		ref="dataSource"/>
+	</bean>	
+</beans>

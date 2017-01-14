@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.my.schedule.scheduler.message.telegram.mapper.TelegramSendMapper">
+
+<select id="selectMassageList" resultType="caseMap">
+	SELECT BOARD_SEQ
+		, TITLE
+		, USER_NAME
+		, URL
+		, UPDATE_YN
+	FROM INNO4_CRAWLING_BOARD
+	WHERE G_ID = 'Menu02' AND T_ID = 'Menu55Top2' AND PUSH_YN = 'N'
+	ORDER BY INSERT_DATE
+</select>
+
+<update id="updateStatment">
+	UPDATE INNO4_CRAWLING_BOARD SET
+	PUSH_YN = 'Y'
+	WHERE BOARD_SEQ = #{board_seq}
+</update>
+
+</mapper>
